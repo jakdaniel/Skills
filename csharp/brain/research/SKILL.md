@@ -82,6 +82,22 @@ Utilisez `/research` quand vous avez besoin de :
 
 N'utilisez PAS `/research` pour clarifier une demande de fonctionnalité précise à implémenter — c'est le rôle de la compétence "Brainstorming", qui se déclenche automatiquement.
 
+## 🎯 Quand utiliser ce skill au sein d'Agent Code ?
+
+`agent-code` mobilise ce skill comme **Étape 1 de son pipeline de production** (optionnelle, si le code n'est pas simple) :
+
+- **Choix de Librairie / Dépendance** : Comparer deux bibliothèques pour C# / .NET (licence, maintenance, perf).
+- **Décision d'Architecture Base de Données / Accès Données** : Évaluer la meilleure structure de données ou stratégie de mise en cache (EF Core vs Dapper, cache mémoire vs distribué).
+- **Optimisation / Benchmarking** : Comparer différentes approches de performance (ex : streaming vs batching).
+- **Validation de Pattern** : Vérifier la faisabilité technique d'un composant complexe avant le premier coup de code.
+
+## 📋 Format de Restitution Attendu
+
+1. **Synthèse & Recommandation Principale** (avec indice de confiance : 🟢 Élevé / 🟡 Moyen / 🔴 Faible).
+2. **Tableau Comparatif des Options** (Avantages, Inconvénients, Impact Performance/Maintenabilité, Alignement Projet).
+3. **Avis Contraire & Risques Identifiés** (*Devil's Advocate*).
+4. **Prochaines Étapes Concrètes** (Orientation vers `brainstorming` pour le design, ou `csharp-standards` / `coder` pour l'implémentation).
+
 ## Résultat produit
 
 - Résultats clés de l'exploration expansive

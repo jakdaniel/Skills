@@ -1,171 +1,136 @@
 ---
 name: agent-code
-description: Orchestrateur principal des compétences relatives au code (développement C# / .NET, standards clean code, Entity Framework Core, revues de code, revue sénior exigeante, traque de bugs & cas limites, audit de sécurité, recherche technique et architecture). À utiliser pour tout développement, refactoring, recherche comparative d'architecture, analyse de code, traque de bugs ou audit de sécurité.
+description: Orchestrateur de production de code C# / .NET. Exécute la demande de code de l'utilisateur selon un pipeline en 2 étapes : (1) écriture du code via coder, (2) validation exhaustive et correction via code-validator. S'appuie sur les skills de support du dossier code/ (csharp-standards, clean-code, database, security, owasp-security, bug-finder) pour la qualité du code produit. À utiliser pour tout développement ou refactoring C# / .NET.
 ---
 
 # 🤖 Orchestrateur Agent Code (`agent-code`)
 
-Cette compétence orchestre l'ensemble des compétences spécialisées situées dans le dossier `.agent/skills/agent-code/`. Elle permet d'orienter, d'activer et de combiner les normes C# / .NET (ASP.NET Core, EF Core), les directives Clean Code, la recherche d'architecture, la sécurité OWASP, les revues de code et la chasse aux bugs selon le contexte de la tâche à accomplir.
+Cet orchestrateur a **une mission unique : produire le code demandé par l'utilisateur**. Il exécute cette mission selon un pipeline séquentiel strict en 2 étapes, en s'appuyant sur les compétences spécialisées du dossier [`../code/`](../code/) pour l'écriture, la validation et le support technique.
 
 ---
 
-## 🗂️ Matrice des Sous-Compétences Orchestrées
+## 🔄 Pipeline de Production de Code
 
-L'orchestrateur délègue et applique les directives des 7 compétences clés du dossier :
-
-| Compétence | Fichier | Rôle & Périmètre d'Application |
-| :--- | :--- | :--- |
-| **`csharp-standards`** | [`./csharp-standards/SKILL.md`](./csharp-standards/SKILL.md) | **Normes de Développement C# / .NET, Architecture & Bonnes Pratiques**<br>• Conventions de nommage, nullable reference types, async/await, records, pattern matching, LINQ.<br>• Architecture : DI native, durées de vie, contrôle d'accès serveur, Minimal APIs, configuration (Options), logging.<br>• Performance (EF Core, allocations), anti-patterns et fichiers < **400 lignes**. |
-| **`clean-code`** | [`./clean-code/SKILL.md`](./clean-code/SKILL.md) | **Clean Code, Boy Scout Rule & .NET**<br>• Nettoyage des using/logs inutilisés et règle du Boy Scout.<br>• Factorisation DRY et Single Source of Truth (`Constants.cs`).<br>• Client API centralisé (`HttpClient` typé) et gestion mémoire .NET. |
-| **`database`** | [`./database/SKILL.md`](./database/SKILL.md) | **Gestion de la Base de Données avec Entity Framework Core**<br>• Requêtes LINQ paramétrées (protection injection native).<br>• Migrations EF Core, transactions, index et stratégie d'accès aux données.<br>• Validation stricte des entrées server-side (DataAnnotations / FluentValidation). |
-| **`bug-finder`** | [`../code/bug-finder/SKILL.md`](../code/bug-finder/SKILL.md) | **Senior Bug Hunter, Traque de Bugs & Cas Limites**<br>• Détection de bugs d'exécution, race conditions, asynchronisme & edge cases.<br>• Traque des hypothèses implicites erronées (async/await, LINQ, EF Core).<br>• Classification `ANO-XX` (Critical/High/Medium) & scénarios d'échec. |
-| **`security`** | [`./security/SKILL.md`](./security/SKILL.md) | **Sécurité OWASP & Zero Trust**<br>• Contrôle d'accès strict côté serveur et validation systématique.<br>• Consultation ciblée des cheatsheets OWASP (`./security/data/`).<br>• Protection XSS, CSRF, antiforgery, validation serveur et gestion des secrets. |
-| **`coder`** | [`./coder/SKILL.md`](./coder/SKILL.md) | **Staff/Principal Engineer — VSA & Clean Code**<br>• Staff/Principal Engineer C# / .NET, Vertical Slice Architecture (VSA).<br>• Isolation stricte des slices, kernel `shared/`, dépendances unidirectionnelles.<br>• SRP strict, union discriminées, interdiction de `dynamic` / `any` / imports profonds inter-slices. |
-| **`research`** | [`./research/SKILL.md`](./research/SKILL.md) | **Recherche Technique & Décision d'Architecture**<br>• Analyse comparative d'options (librairies, patterns .NET).<br>• Méthodologie en 4 phases avec rôle d'avocat du diable (*Devil's Advocate*).<br>• Évaluation des compromis et recommandations motivées avec niveau de confiance. |
-
-> 🧹 **Historique de déduplication** :
-> - `arch-csharp` et `best-practices` ont été **fusionnés dans `csharp-standards`** (contenu redondant : conventions, architecture DI, performance, anti-patterns).
-> - Les postures de **revue de code** (`code-review`, `code-review-sceptique`, `code-review-extreme`, `review-senior`) sont **déléguées à l'orchestrateur `agent-review`**, seul propriétaire des reviews. `bug-finder` reste référencé ici pour l'usage développement (traque de bugs pendant le codage) ; il vit dans [`../code/bug-finder/`](../code/bug-finder/SKILL.md), version canonique unique partagée avec `agent-review`.
-> - `mycode-review` et `review-senior` ont été retirés de ce dossier (copies obsolètes).
-
----
-
-## 🗺️ Workflow d'Orchestration
-
-Lorsqu'une tâche de code est confiée à l'agent, l'orchestrateur suit le flux ci-dessous :
+Toute demande de code suit obligatoirement ce flux :
 
 ```mermaid
 flowchart TD
-    A[Demande Utilisateur / Tâche Code] --> B{Analyser le type de tâche}
+    A[Demande Utilisateur / Tâche Code] --> C[Étape 1 — Activer coder]
     
-    B -->|Choix Technique / Architecture| R[Activer research]
-    B -->|Développement / Refactoring C# / .NET| C1[Activer csharp-standards]
-    B -->|Développement Feature / VSA / Clean Code| C0[Activer coder]
-    B -->|Propreté Code / HttpClient / DI| C2[Activer clean-code]
-    B -->|Bdd / LINQ / Migrations EF Core| C3[Activer database]
-    B -->|Traque de Bugs / Race Conditions / Edge Cases| B1[Activer bug-finder]
-    B -->|Revue de Code / Validation PR| D[Déléguer à l'orchestrateur agent-review]
-    B -->|Revue Exigeante / Validation Prod| E[Déléguer à agent-review : review-senior]
-    B -->|Audit Sécurité / Auth / Autorisation| F[Activer security]
-    B -->|Tâche Complexe Globale| G[Combinaison Multi-Skills]
+    C --> C1[Écrire le code selon la demande<br/>VSA + Clean Code + SOLID]
+    C1 --> V[Étape 2 — Activer code-validator]
     
-    R --> H1[Étude Comparative en 4 Phases + Index de Confiance]
-    C1 --> H2[Appliquer Standards C# + Async/Await]
-    C2 --> H3[Nettoyer Usings + Appliquer Boy Scout + HttpClient typé]
-    C3 --> H4[Requêtes LINQ + Migrations EF Core]
-    B1 --> H5[Traquer Hypothèses Implicites + Table ANO-XX + Scénarios Échec]
-    D --> I[Posture adaptée : sceptique / exigeante / pédagogique + ANO-XX]
-    E --> J[Vérifier Limites <400L + Audit Sans Complaisance]
-    F --> K[Consulter Cheatsheets OWASP + Validation Serveur]
-    G --> L[Pipeline Complet: Research -> Dev -> Security -> Review]
-    
-    H1 --> M[Restitution & Validation dotnet build]
-    H2 --> M
-    H3 --> M
-    H4 --> M
-    H5 --> M
-    I --> M
-    J --> M
-    K --> M
-    L --> M
+    V --> V1{Validation conforme ?}
+    V1 -->|Non| C2[Corriger le code<br/>puis revalider]
+    C2 --> V1
+    V1 -->|Oui| F[Rapport de validation + Restitution<br/>dotnet build / dotnet test]
 ```
+
+### Étape 1 — Écriture du code avec `coder` (obligatoire)
+
+**Déclencheur** : systématique, dès réception de la demande.
+
+* **Compétence** : [`../code/coder/SKILL.md`](../code/coder/SKILL.md)
+* **Consignes** :
+  1. Produire le code demandé en tant que Staff/Principal Engineer : Vertical Slice Architecture, Clean Code, SOLID.
+  2. Respecter les standards C# / .NET et les skills de support mobilisés pendant l'écriture (voir section Support ci-dessous).
+  3. Aucun placeholder, `dynamic`, `TODO` ou dette technique volontaire : si la demande est ambiguë, poser une question ciblée ou poser une hypothèse explicite documentée.
+
+### Étape 2 — Validation et correction avec `code-validator` (obligatoire)
+
+**Déclencheur** : systématique, immédiatement après l'étape 1 — la tâche n'est **pas terminée** tant que cette validation n'a pas eu lieu. Ne pas demander la permission : valider, corriger, rapporter.
+
+* **Compétence** : [`../code/code-validator/SKILL.md`](../code/code-validator/SKILL.md)
+* **Consignes** :
+  1. Reconstituer la demande initiale (exigences explicites + implicites) et vérifier le code point par point.
+  2. **Corriger directement** tout écart trouvé (raccourci silencieux, cas limite non traité, code factice, violation d'architecture), puis revalider.
+  3. Terminer par le rapport de validation au format imposé (conformité, problèmes corrigés, points ouverts, verdict) et exécuter `dotnet build` / `dotnet test` sans erreur ni nouveau warning.
 
 ---
 
-## 🎯 Combinaisons & Scénarios d'Orchestration
+## 🗂️ Skills de Support (dossier `code/`)
+
+Ces compétences ne sont pas des étapes du pipeline : elles sont **mobilisées en support** pendant les étapes 1 et 2 selon la nature du code produit. L'agent les charge au besoin pour garantir la qualité du code.
+
+| Compétence | Fichier | Rôle & Périmètre de Support |
+| :--- | :--- | :--- |
+| **`csharp-standards`** | [`../code/csharp-standards/SKILL.md`](../code/csharp-standards/SKILL.md) | Normes C# / .NET : nommage, nullable reference types, async/await, records, LINQ, DI, Minimal APIs, performance, limites < **400 lignes**. |
+| **`clean-code`** | [`../code/clean-code/SKILL.md`](../code/clean-code/SKILL.md) | Clean Code & Boy Scout Rule : using/logs inutilisés, factorisation DRY, `Constants.cs`, `HttpClient` typé centralisé. |
+| **`database`** | [`../code/database/SKILL.md`](../code/database/SKILL.md) | EF Core : requêtes LINQ paramétrées, migrations, transactions, index, validation server-side des payloads. |
+| **`security`** | [`../code/security/SKILL.md`](../code/security/SKILL.md) | Sécurité OWASP & Zero Trust : contrôle d'accès serveur, validation systématique, cheatsheets OWASP (`../code/security/data/`). |
+| **`owasp-security`** | [`../code/owasp-security/SKILL.md`](../code/owasp-security/SKILL.md) | Audit OWASP Top 10 : référence approfondie pour tout endpoint exposé, authentification, autorisation. |
+| **`bug-finder`** | [`../code/bug-finder/SKILL.md`](../code/bug-finder/SKILL.md) | Traque de bugs pendant le codage : race conditions, hypothèses implicites async/LINQ/EF Core, classification `ANO-XX`. |
+
+> Les postures de **revue de code** (`code-review`, `code-review-sceptique`, `code-review-extreme`, `review-senior`) du dossier [`../code/`](../code/) restent la propriété de l'orchestrateur **`agent-review`** : `agent-code` produit le code, il ne fait pas la revue formelle. `code-validator` (étape 2) couvre la validation post-écriture ; pour une revue de code structurée ou un merge, déléguer à `agent-review`.
+
+---
+
+## 🎯 Scénarios d'Application du Pipeline
 
 ### Scénario 1 : Développement de Service ou Endpoint ASP.NET Core
-* **Compétences Principales** : [`csharp-standards`](./csharp-standards/SKILL.md) + [`clean-code`](./clean-code/SKILL.md)
-* **Consignes** :
-  1. Respecter les conventions C# (nommage, nullable, async/await, records).
-  2. Respecter la limite de **400 lignes** par fichier/classe.
-  3. Appliquer la règle du Boy Scout (nettoyer les using et logs inutilisés).
-  4. Utiliser le client API centralisé (`HttpClient` typé / `IHttpClientFactory`) pour la communication HTTP sortante.
+* **Pipeline** : `coder` → `code-validator`.
+* **Support mobilisé** : [`csharp-standards`](../code/csharp-standards/SKILL.md) + [`clean-code`](../code/clean-code/SKILL.md) + [`security`](../code/security/SKILL.md).
 
-### Scénario 2 : Interaction Base de Données EF Core & Endpoints Server-Side
-* **Compétences Principales** : [`database`](./database/SKILL.md) + [`security`](./security/SKILL.md)
-* **Consignes** :
-  1. Utiliser des requêtes LINQ paramétrées (jamais de SQL concaténé, `FromSqlInterpolated` si SQL brut).
-  2. Valider l'appartenance de la ressource à l'utilisateur authentifié côté serveur.
-  3. Valider l'intégralité des payloads entrants (DataAnnotations / FluentValidation) avant toute action métier.
+### Scénario 2 : Feature Complète / Slice Verticale
+* **Pipeline** : `coder` → `code-validator`.
+* **Support mobilisé** : [`csharp-standards`](../code/csharp-standards/SKILL.md) + [`database`](../code/database/SKILL.md) + [`bug-finder`](../code/bug-finder/SKILL.md).
 
-### Scénario 3 : Traque de Bugs, Diagnostic & Race Conditions
-* **Compétence Principale** : [`bug-finder`](../code/bug-finder/SKILL.md)
-* **Compétences Complémentaires** : [`database`](./database/SKILL.md) / [`csharp-standards`](./csharp-standards/SKILL.md)
-* **Consignes** :
-  1. Inspecter les flux asynchrones (`Task`, `async/await`, `ConfigureAwait`), l'exécution LINQ (différée/immédiate) et les requêtes EF Core.
-  2. Identifier les hypothèses implicites erronées.
-  3. Dresser la **Table des Anomalies (ANO-XX)** classifiée par sévérité.
+### Scénario 3 : Interaction Base de Données EF Core
+* **Pipeline** : `coder` → `code-validator`.
+* **Support mobilisé** : [`database`](../code/database/SKILL.md) + [`security`](../code/security/SKILL.md) (requêtes LINQ paramétrées obligatoires, validation des payloads avant toute action métier).
 
-### Scénario 4 : Revue de Code Standard & Refactoring
-* **Orchestrateur** : `agent-review` (délégation — les revues ne vivent plus dans ce dossier)
-* **Compétence Complémentaire** : [`clean-code`](./clean-code/SKILL.md)
-* **Consignes** :
-  1. Activer `agent-review` puis charger le sous-skill de revue adapté (`code-review`, `code-review-sceptique`, `review-senior`).
-  2. Vérifier qu'aucune constante magique n'est dupliquée (DRY).
-  3. S'assurer que la **Table des Anomalies (ANO-XX)** est produite.
-
-### Scénario 5 : Revue Avant Merge / Validation Production Exigeante
-* **Orchestrateur** : `agent-review` (sous-skill `review-senior`)
-* **Compétence Complémentaire** : [`security`](./security/SKILL.md)
-* **Consignes** :
-  1. Exiger la tolérance zéro sur le contrôle d'accès et la validation serveur.
-  2. Bloquer tout usage de `dynamic`, toute fuite mémoire (`IDisposable` non disposé, événement non désabonné) ou classe dépassant 400 lignes.
+### Scénario 4 : Refactoring
+* **Pipeline** : `coder` → `code-validator` (le validateur vérifie qu'aucun changement de comportement hors périmètre n'a été introduit).
+* **Support mobilisé** : [`clean-code`](../code/clean-code/SKILL.md) + [`bug-finder`](../code/bug-finder/SKILL.md).
 
 ---
 
 ## 📜 Invariants & Standards Absolus
 
-Chaque sous-compétence du dossier `agent-code` s'exécute sous la contrainte des règles globales du projet :
+Le pipeline s'exécute sous les règles globales du projet, quel que soit le code produit :
 
-1. **Contrôle d'Accès Obligatoire** :
-   - **Tous** les endpoints doivent vérifier l'authentification et l'autorisation côté serveur avant toute action.
-2. **Nullable Reference Types Activés** :
-   - `<Nullable>enable</Nullable>` est la norme ; interdiction de neutraliser les avertissements de nullabilité.
-3. **Limites de Taille & Découpage** :
-   - Classes / fichiers < **400 lignes**, Services < **500 lignes**, Fonctions < **50 lignes**.
-4. **Clean Code & Boy Scout** :
-   - Suppression systématique des using/logs inutilisés et factorisation DRY dans `Constants.cs`.
-5. **Testing Diamond & Checks** :
-   - Exécution des validations via `dotnet build` et `dotnet test`.
+1. **Pipeline non négociable** : les deux étapes (`coder` puis `code-validator`) sont **toujours** exécutées, dans cet ordre.
+2. **Contrôle d'Accès Obligatoire** : tous les endpoints vérifient authentification et autorisation côté serveur avant toute action.
+3. **Nullable Reference Types Activés** : `<Nullable>enable</Nullable>` est la norme ; interdiction de neutraliser les avertissements.
+4. **Limites de Taille & Découpage** : classes / fichiers < **400 lignes**, services < **500 lignes**, fonctions < **50 lignes**.
+5. **Zéro code factice** : aucun `TODO`, stub, `NotImplementedException` ou test sans assertion ne doit survivre à l'étape 2.
+6. **Validation finale** : `dotnet build` et `dotnet test` sans erreur ni nouveau warning.
 
 ---
 
 ## 🌳 Arbre de Décision d'Activation
 
 ```
-SI la demande concerne "développer un service / endpoint / logique C#" :
-   ➜ Charger `csharp-standards/SKILL.md` + `clean-code/SKILL.md`
+TOUTE demande de code C# / .NET entre dans le pipeline :
 
-SI la demande concerne "développer une feature complète / VSA / architecture verticale" :
-   ➜ Charger `coder/SKILL.md`
+ÉTAPE 1 — TOUJOURS :
+           ➜ Charger ../code/coder/SKILL.md et écrire le code
+           EN SUPPORT, charger au besoin :
+             • standards/nommage/async        ➜ ../code/csharp-standards/SKILL.md
+             • propreté / DRY / HttpClient    ➜ ../code/clean-code/SKILL.md
+             • SQL / LINQ / EF Core           ➜ ../code/database/SKILL.md
+             • endpoints / auth / autorisation ➜ ../code/security/SKILL.md
+             • audit OWASP approfondi         ➜ ../code/owasp-security/SKILL.md
+             • flux async / cas limites       ➜ ../code/bug-finder/SKILL.md
 
-SI la demande concerne "requêtes SQL / LINQ / migrations EF Core / endpoints server" :
-   ➜ Charger `database/SKILL.md` + `security/SKILL.md`
+ÉTAPE 2 — TOUJOURS, immédiatement après l'étape 1 :
+           ➜ Charger ../code/code-validator/SKILL.md
+           • conforme    ➜ rapport final + dotnet build / dotnet test
+           • non conforme ➜ corriger puis revalider (boucle courte)
 
-SI la demande concerne "nettoyer le code / factoriser des classes ou constantes" :
-   ➜ Charger `clean-code/SKILL.md`
-
-SI la demande concerne "recherche de bugs / cas limites / race conditions / comportement inattendu" :
-   ➜ Charger `../code/bug-finder/SKILL.md`
-
-SI la demande concerne "comparer des choix d'architecture" :
-   ➜ Charger `research/SKILL.md`
-
-SI la demande concerne "revue de code / validation avant merge / revue exigeante" :
-   ➜ Déléguer à l'orchestrateur `agent-review` (postures : code-review, code-review-sceptique, review-senior)
-
-SI la demande concerne "audit de sécurité / auth / autorisation" :
-   ➜ Charger `security/SKILL.md`
+HORS PÉRIMÈTRE — revue de code formelle / validation avant merge :
+           ➜ Déléguer à l'orchestrateur agent-review
 ```
 
 ---
 
 ## ✅ Checklist de Vérification d'Orchestration
 
-Avant de finaliser une tâche prise en charge par `agent-code` :
-- [ ] Le code compile avec les warnings nullables activés sans erreur ?
-- [ ] Les using et logs inutilisés ont-ils été nettoyés (Boy Scout Rule) ?
+Avant de considérer une tâche de code comme terminée :
+- [ ] Étape 1 (`coder`) : le code a-t-il été produit conformément à VSA, Clean Code et SOLID ?
+- [ ] Étape 2 (`code-validator`) : la validation a-t-elle été exécutée avec rapport final (verdict explicite) ?
+- [ ] Les écarts détectés par le validateur ont-ils été corrigés directement, puis revalidés ?
+- [ ] Les skills de support pertinents ont-ils été mobilisés pendant l'écriture ?
+- [ ] Le code compile avec les warnings nullables activés, sans erreur ni nouveau warning (`dotnet build` / `dotnet test`) ?
+- [ ] Aucun `TODO`, stub, code factice ou classe > 400 lignes ?
 - [ ] Les endpoints vérifient-ils auth + autorisation côté serveur ?
-- [ ] Aucune classe ne dépasse 400 lignes ?
-- [ ] La validation `dotnet build` s'exécute-t-elle sans erreur ni nouveau warning ?
