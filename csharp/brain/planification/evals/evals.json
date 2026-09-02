@@ -1,0 +1,96 @@
+{
+  "skill_name": "Planification",
+  "evals": [
+    {
+      "id": 0,
+      "eval_name": "sms-rappel",
+      "prompt": "Crée un plan d'implémentation pour les rappels SMS automatiques envoyés 24h avant chaque rendez-vous. Le projet est une app ASP.NET Core multi-utilisateurs pour professionnels de la beauté, avec EF Core (SQL Server). Les prestations ont déjà un modèle en base (table Appointments). Le SMS doit être envoyé via Twilio (SmsService déjà existant). L'envoi doit être déclenché par un job planifié (BackgroundService / IHostedService), pas en temps réel.",
+      "expected_output": "Plan d'implémentation complet avec en-tête structuré, tâches bite-sized TDD, chemins de fichiers réels, migration EF Core si nécessaire, et commits fréquents.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "header",
+          "text": "Le plan contient l'en-tête obligatoire avec sections Objectif, Architecture, Stack Technique et séparateur ---"
+        },
+        {
+          "id": "tdd-pattern",
+          "text": "Chaque tâche contient : test défaillant → commande exécution → implémentation → commande validation → commit"
+        },
+        {
+          "id": "real-paths",
+          "text": "Les chemins de fichiers référencés sont cohérents avec l'architecture ASP.NET Core (src/Features/... ou src/Services/...)"
+        },
+        {
+          "id": "twilio-integration",
+          "text": "Le plan intègre le SmsService existant plutôt que de réinventer l'intégration Twilio from scratch"
+        },
+        {
+          "id": "scheduled-job",
+          "text": "Le plan mentionne un BackgroundService / IHostedService ou job planifié pour déclencher les envois"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "eval_name": "export-csv",
+      "prompt": "Crée un plan d'implémentation pour exporter la liste des clients au format CSV depuis le CRM. L'export doit inclure : nom, prénom, email, téléphone, date du dernier rendez-vous, nombre total de rendez-vous. L'utilisateur télécharge le fichier via un bouton dans la vue clients. Le projet est ASP.NET Core avec EF Core. La table Clients existe déjà.",
+      "expected_output": "Plan d'implémentation complet avec en-tête structuré, tâches bite-sized TDD, endpoint API ASP.NET Core pour générer le CSV (streaming), et commits fréquents.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "header",
+          "text": "Le plan contient l'en-tête obligatoire avec sections Objectif, Architecture, Stack Technique et séparateur ---"
+        },
+        {
+          "id": "tdd-pattern",
+          "text": "Chaque tâche contient : test défaillant → commande exécution → implémentation → commande validation → commit"
+        },
+        {
+          "id": "real-paths",
+          "text": "Les chemins de fichiers référencés sont cohérents avec l'architecture ASP.NET Core (src/...)"
+        },
+        {
+          "id": "ownership",
+          "text": "Le plan vérifie que l'utilisateur authentifié a le droit d'accéder aux clients exportés (autorisations côté serveur)"
+        },
+        {
+          "id": "csharp-quality",
+          "text": "Le plan utilise async/await de bout en bout et un type explicite pour le résultat (record/DTO), sans dynamic"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "couleur-prestation",
+      "prompt": "Crée un plan d'implémentation pour permettre à l'utilisateur de définir une couleur par prestation dans les paramètres. La couleur doit être persistée en base (EF Core) et appliquée dans le calendrier. Le projet est ASP.NET Core avec EF Core. Le système de couleur actuel utilise une palette fixe définie dans une classe statique PrestationColors.",
+      "expected_output": "Plan d'implémentation complet avec en-tête structuré, tâches bite-sized TDD, migration EF Core pour la colonne couleur, et commits fréquents.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "header",
+          "text": "Le plan contient l'en-tête obligatoire avec sections Objectif, Architecture, Stack Technique et séparateur ---"
+        },
+        {
+          "id": "tdd-pattern",
+          "text": "Chaque tâche contient : test défaillant → commande exécution → implémentation → commande validation → commit"
+        },
+        {
+          "id": "real-paths",
+          "text": "Les chemins incluent les fichiers réels du codebase (calendar, settings, services)"
+        },
+        {
+          "id": "ef-migration",
+          "text": "Une migration EF Core est incluse pour la colonne couleur"
+        },
+        {
+          "id": "csharp-quality",
+          "text": "Le plan mentionne des records/DTO et async/await pour la nouvelle logique, sans état statique mutable"
+        },
+        {
+          "id": "layers",
+          "text": "Le plan couvre au moins 3 couches : DB/migration + API + service + UI"
+        }
+      ]
+    }
+  ]
+}
