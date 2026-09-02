@@ -13,13 +13,13 @@ Cette compétence orchestre l'ensemble des compétences de revue de code située
 
 ## 🗂️ Matrice des Sous-Compétences Orchestrées
 
-L'orchestrateur délègue aux compétences suivantes (3 dans ce dossier + `bug-finder` partagé avec `agent-code`) :
+L'orchestrateur délègue aux compétences suivantes (3 situées dans le dossier [`../code/`](../code/) + `bug-finder` partagé avec `agent-code`) :
 
 | Compétence | Fichier | Rôle & Posture de Review |
 | :--- | :--- | :--- |
-| **`code-review-sceptique`** | [`./code-review-sceptique/SKILL.md`](./code-review-sceptique/SKILL.md) | **Revue Sceptique Orientée Risques ("What could go wrong?")**<br>• Principe : "All tests pass" ≠ code sûr, robuste ou maintenable.<br>• Classification stricte double axe : Sévérité (Critical → Info) × Validité (Confirmed → Speculative).<br>• Table de constats obligatoire affichée en premier, évaluation de la couverture réelle des tests. |
-| **`code-review-extreme`** | [`./code-review-extreme/SKILL.md`](./code-review-extreme/SKILL.md) | **Revue Brutale Sans Concession (Stress-Test)**<br>• Posture d'un développeur senior dur, critiqueur et sans filtre.<br>• Débusque sans pitié le code "à peu près", les anti-patterns et la dette.<br>• À réserver au stress-test volontaire — jamais pour un feedback utilisateur standard. |
-| **`review-senior`** | [`./review-senior/SKILL.md`](./review-senior/SKILL.md) | **Revue Sénior Exigeante & Constructive (Validation Prod)**<br>• Audit rigoureux, incisif et sans concession, mais constructif (sans la toxicité extrême).<br>• Tolérance zéro sur les points bloquants : contrôle d'accès/ownership, `dynamic`, fuites de ressources, limites de lignes.<br>• Posture de référence pour valider un code prêt pour la production avant merge. |
+| **`code-review-sceptique`** | [`../code/code-review-sceptique/SKILL.md`](../code/code-review-sceptique/SKILL.md) | **Revue Sceptique Orientée Risques ("What could go wrong?")**<br>• Principe : "All tests pass" ≠ code sûr, robuste ou maintenable.<br>• Classification stricte double axe : Sévérité (Critical → Info) × Validité (Confirmed → Speculative).<br>• Table de constats obligatoire affichée en premier, évaluation de la couverture réelle des tests. |
+| **`code-review-extreme`** | [`../code/code-review-extreme/SKILL.md`](../code/code-review-extreme/SKILL.md) | **Revue Brutale Sans Concession (Stress-Test)**<br>• Posture d'un développeur senior dur, critiqueur et sans filtre.<br>• Débusque sans pitié le code "à peu près", les anti-patterns et la dette.<br>• À réserver au stress-test volontaire — jamais pour un feedback utilisateur standard. |
+| **`review-senior`** | [`../code/review-senior/SKILL.md`](../code/review-senior/SKILL.md) | **Revue Sénior Exigeante & Constructive (Validation Prod)**<br>• Audit rigoureux, incisif et sans concession, mais constructif (sans la toxicité extrême).<br>• Tolérance zéro sur les points bloquants : contrôle d'accès/ownership, `dynamic`, fuites de ressources, limites de lignes.<br>• Posture de référence pour valider un code prêt pour la production avant merge. |
 | **`bug-finder`** | [`../code/bug-finder/SKILL.md`](../code/bug-finder/SKILL.md) | **Senior Bug Hunter — Traque de Bugs & Hypothèses Implicites**<br>• Analyse le code "comme s'il était déjà en production sous forte charge" : bugs existants, latents et futurs probables.<br>• Principe : un bug est souvent une hypothèse implicite qui s'avère fausse à l'exécution.<br>• Axes C#/.NET : async/await, LINQ différé, EF Core, ownership, edge cases.<br>• Classification `ANO-XX` (Critical → Potential) + scénarios de déclenchement. |
 
 > ⚠️ **Note de versionnage** : une variante plus riche existe ailleurs —
@@ -27,7 +27,7 @@ L'orchestrateur délègue aux compétences suivantes (3 dans ce dossier + `bug-f
 
 > 🧹 **Historique de déduplication** :
 > - `mycode-review` supprimé (copie renommée de l'ancien `agent-code/code-review`, lui-même retiré lors du déplacement des revues).
-> - `review-senior` a été **déplacé ici depuis `agent-code`** (les copies d'`agent-code` ont été supprimées) : ce dossier en est désormais la version canonique.
+> - `review-senior` a été **déplacé dans `../code/`** (les copies d'`agent-code` ont été supprimées) : [`../code/review-senior/`](../code/review-senior/SKILL.md) en est désormais la version canonique, référencée par ce dossier.
 > - `bug-finder` a été **fusionné avec la version d'`agent-code`** dans [`code/bug-finder/`](../code/bug-finder/SKILL.md) (copie locale supprimée) : unique version canonique, partagée entre les deux orchestrateurs.
 
 ---
@@ -67,14 +67,14 @@ flowchart TD
 ## 🎯 Combinaisons & Scénarios d'Orchestration
 
 ### Scénario 1 : Revue de Code Standard & Actionnable
-* **Compétence Principale** : [`review-senior`](./review-senior/SKILL.md) (posture constructive)
+* **Compétence Principale** : [`review-senior`](../code/review-senior/SKILL.md) (posture constructive)
 * **Consignes** :
   1. Couvrir les axes : découpage, SOLID, Clean Architecture, bonnes pratiques C# / .NET.
   2. Pour chaque problème : explication du risque + exemple de code corrigé.
   3. Rester constructif : le but est l'amélioration, pas la culpabilisation.
 
 ### Scénario 2 : Validation Avant Merge / Analyse de Pull Request
-* **Compétence Principale** : [`code-review-sceptique`](./code-review-sceptique/SKILL.md)
+* **Compétence Principale** : [`code-review-sceptique`](../code/code-review-sceptique/SKILL.md)
 * **Compétence Complémentaire** : [`bug-finder`](../code/bug-finder/SKILL.md)
 * **Consignes** :
   1. Adopter la posture "What could go wrong?" — ne jamais défendre le code.
@@ -89,21 +89,21 @@ flowchart TD
   3. Documenter les scénarios d'échec et les cas limites non gérés.
 
 ### Scénario 4 : Revue Sénior Exigeante Avant Mise en Production
-* **Compétence Principale** : [`review-senior`](./review-senior/SKILL.md)
-* **Compétence Complémentaire** : [`code-review-sceptique`](./code-review-sceptique/SKILL.md)
+* **Compétence Principale** : [`review-senior`](../code/review-senior/SKILL.md)
+* **Compétence Complémentaire** : [`code-review-sceptique`](../code/code-review-sceptique/SKILL.md)
 * **Consignes** :
   1. Audit sans complaisance mais constructif : le code doit être prêt pour la production.
   2. Tolérance zéro sur les bloquants : contrôle d'accès/ownership serveur, typage non strict (`dynamic`, casts sauvages), fuites de ressources (`IDisposable`, `HttpClient`), limites de lignes dépassées.
   3. Chaque refus est motivé et accompagné d'une piste de correction.
 
 ### Scénario 5 : Stress-Test / Retour Brutal Volontaire
-* **Compétence Principale** : [`code-review-extreme`](./code-review-extreme/SKILL.md)
+* **Compétence Principale** : [`code-review-extreme`](../code/code-review-extreme/SKILL.md)
 * **Consignes** :
   1. Zéro complaisance : tout anti-pattern, toute dette et tout "à peu près" sont dénoncés.
   2. Utiliser uniquement à la demande explicite (posture agressive assumée).
 
 ### Scénario 6 : Audit Complet Multi-Postures
-* **Pipeline** : [`bug-finder`](../code/bug-finder/SKILL.md) → [`code-review-sceptique`](./code-review-sceptique/SKILL.md) → [`review-senior`](./review-senior/SKILL.md)
+* **Pipeline** : [`bug-finder`](../code/bug-finder/SKILL.md) → [`code-review-sceptique`](../code/code-review-sceptique/SKILL.md) → [`review-senior`](../code/review-senior/SKILL.md)
 * **Consignes** :
   1. Phase 1 (bug-finder) : identifier bugs latents et hypothèses fragiles.
   2. Phase 2 (sceptique) : classifier tous les constats par risque et validité.
@@ -130,22 +130,22 @@ Quel que soit le sous-skill activé, les constats s'exécutent sous les standard
 
 ```
 SI la demande concerne "review le code / améliore ce code / refactoring conseillé" :
-   ➜ Charger review-senior/SKILL.md
+   ➜ Charger ../code/review-senior/SKILL.md
 
 SI la demande concerne "valide ce code avant merge / review de PR / est-ce risqué ?" :
-   ➜ Charger code-review-sceptique/SKILL.md (+ ../code/bug-finder/SKILL.md si logique complexe)
+   ➜ Charger ../code/code-review-sceptique/SKILL.md (+ ../code/bug-finder/SKILL.md si logique complexe)
 
 SI la demande concerne "code prêt pour la prod / revue exigeante avant merge" :
-   ➜ Charger review-senior/SKILL.md
+   ➜ Charger ../code/review-senior/SKILL.md
 
 SI la demande concerne "ça bug / comportement inattendu / trouve les cas limites" :
    ➜ Charger ../code/bug-finder/SKILL.md
 
 SI la demande concerne "sois brutal / stress-test / review sans pitié" :
-   ➜ Charger code-review-extreme/SKILL.md
+   ➜ Charger ../code/code-review-extreme/SKILL.md
 
 SI la demande concerne "audit complet du code" :
-   ➜ Pipeline : ../code/bug-finder -> code-review-sceptique -> review-senior
+   ➜ Pipeline : ../code/bug-finder -> ../code/code-review-sceptique -> ../code/review-senior
 ```
 
 ---
