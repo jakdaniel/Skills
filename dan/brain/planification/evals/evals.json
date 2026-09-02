@@ -1,0 +1,96 @@
+{
+  "skill_name": "Planification",
+  "evals": [
+    {
+      "id": 0,
+      "eval_name": "sms-rappel",
+      "prompt": "Crée un plan d'implémentation pour les rappels SMS automatiques envoyés 24h avant chaque rendez-vous. Le projet est KalySync, une app SvelteKit multi-tenant pour professionnels de la beauté, avec Cloudflare Pages + D1 (SQLite). Les prestations ont déjà un modèle en base (table Appointments). Le SMS doit être envoyé via Twilio (SmsService déjà existant). L'envoi doit être déclenché par un cron Cloudflare Workers, pas en temps réel.",
+      "expected_output": "Plan d'implémentation complet avec en-tête structuré, tâches bite-sized TDD, chemins de fichiers réels, migration SQL si nécessaire, et commits fréquents.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "header",
+          "text": "Le plan contient l'en-tête obligatoire avec sections Objectif, Architecture, Stack Technique et séparateur ---"
+        },
+        {
+          "id": "tdd-pattern",
+          "text": "Chaque tâche contient : test défaillant → commande exécution → implémentation → commande validation → commit"
+        },
+        {
+          "id": "real-paths",
+          "text": "Les chemins de fichiers référencés sont cohérents avec l'architecture KalySync (frontend/src/...)"
+        },
+        {
+          "id": "twilio-integration",
+          "text": "Le plan intègre SmsService ou SmsBatchService existant plutôt que de réinventer Twilio from scratch"
+        },
+        {
+          "id": "cron-worker",
+          "text": "Le plan mentionne un Cloudflare Worker ou cron job pour déclencher les envois"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "eval_name": "export-csv",
+      "prompt": "Crée un plan d'implémentation pour exporter la liste des clients d'une entreprise au format CSV depuis le CRM KalySync. L'export doit inclure : nom, prénom, email, téléphone, date du dernier RDV, nombre total de RDV. L'utilisateur télécharge le fichier via un bouton dans la vue clients. Le projet est KalySync (SvelteKit, Cloudflare D1). La table Clients existe déjà avec compagnie_id.",
+      "expected_output": "Plan d'implémentation complet avec en-tête structuré, tâches bite-sized TDD, route API SvelteKit pour générer le CSV, composant Svelte 5 avec runes, et commits fréquents.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "header",
+          "text": "Le plan contient l'en-tête obligatoire avec sections Objectif, Architecture, Stack Technique et séparateur ---"
+        },
+        {
+          "id": "tdd-pattern",
+          "text": "Chaque tâche contient : test défaillant → commande exécution → implémentation → commande validation → commit"
+        },
+        {
+          "id": "real-paths",
+          "text": "Les chemins de fichiers référencés sont cohérents avec l'architecture KalySync (frontend/src/...)"
+        },
+        {
+          "id": "compagnie-id",
+          "text": "La route API inclut le filtre WHERE compagnie_id = ? pour l'isolation multi-tenant"
+        },
+        {
+          "id": "svelte5-runes",
+          "text": "Le composant Svelte utilise $state ou $derived, jamais writable/readable de svelte/store"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "couleur-prestation",
+      "prompt": "Crée un plan d'implémentation pour permettre à l'entreprise de définir une couleur par prestation dans les paramètres KalySync. La couleur doit être persistée en base D1 et appliquée dans le calendrier. Le projet est KalySync (SvelteKit multi-tenant, Cloudflare Pages + D1). Le système de couleur actuel utilise une palette fixe dans prestationColor.svelte.ts.",
+      "expected_output": "Plan d'implémentation complet avec en-tête structuré, tâches bite-sized TDD, migration SQL D1, store Svelte 5, et commits fréquents.",
+      "files": [],
+      "assertions": [
+        {
+          "id": "header",
+          "text": "Le plan contient l'en-tête obligatoire avec sections Objectif, Architecture, Stack Technique et séparateur ---"
+        },
+        {
+          "id": "tdd-pattern",
+          "text": "Chaque tâche contient : test défaillant → commande exécution → implémentation → commande validation → commit"
+        },
+        {
+          "id": "real-paths",
+          "text": "Les chemins incluent les fichiers réels du codebase (calendar, settings, stores)"
+        },
+        {
+          "id": "sql-migration",
+          "text": "Une migration SQL D1 est incluse pour la colonne couleur"
+        },
+        {
+          "id": "svelte5-runes",
+          "text": "Le plan mentionne $state ou $derived pour le store, jamais writable/readable de svelte/store"
+        },
+        {
+          "id": "layers",
+          "text": "Le plan couvre au moins 3 couches : DB/migration + API + store Svelte + UI"
+        }
+      ]
+    }
+  ]
+}
